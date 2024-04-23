@@ -6,7 +6,15 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rimraf dist && swc ./src -d dist",
-    "start": "node dist/index.js"
+    "db:console": "docker compose run postgres psql -h localhost -U postgres -d webapp_dev",
+    "db:migrate": "knex migrate:latest",
+    "docker:db:migrate": "docker compose run backend pnpm db:migrate",
+    "docker:db:migrate:undo": "docker compose run backend pnpx knex migrate:down",
+    "docker:seed:dev": "docker compose run backend pnpm ts-node scripts/seed/dev.ts",
+    "rebuild:be": "docker compose build backend && docker compose rm --force --stop backend && docker compose up -d backend",
+    "start": "node dist/src/index.js",
+    "start:docker": "pnpm build && node --inspect=0.0.0.0 dist/src/index.js",
+    "watch": "watchy --no-init-spawn --debounce 1 -w src -- docker-compose restart backend"
   },
   "keywords": [],
   "author": "",
@@ -15,13 +23,25 @@
     "node": "18.19.1"
   },
   "dependencies": {
+    "@prisma/client": "^5.11.0",
+    "express": "^4.19.2",
+    "knex": "^3.1.0",
+    "morgan": "^1.10.0",
+    "pg": "^8.11.3",
     "typescript": "^5.4.3"
   },
   "devDependencies": {
     "@swc/cli": "^0.3.10",
     "@swc/core": "^1.4.8",
     "@tsconfig/node18": "^18.2.2",
+    "@types/express": "^4.17.21",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^20.11.30",
-    "rimraf": "^5.0.5"
+    "@typescript-eslint/eslint-plugin": "^7.4.0",
+    "@typescript-eslint/parser": "^7.4.0",
+    "eslint": "^8.57.0",
+    "prisma": "^5.11.0",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.2"
   }
 }
